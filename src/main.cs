@@ -1,14 +1,6 @@
-using System;
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-namespace Wes;
+app.MapGet("/", () => "Hello World!");
 
-namespace App
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Wes App");
-        }
-    }
-}
+app.Run();
