@@ -1,6 +1,12 @@
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+using GetParams;
+
+var getParams = new GetParams();
+
+app.MapGet("/", (string param) => {
+    getParams.Get(param);
+});
 
 app.Run();
