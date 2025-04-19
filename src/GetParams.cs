@@ -1,11 +1,13 @@
 using System.Text.Json;
 
-class GetParams {
-  public string Get(string params) {
+namespace GetParamsFile;
+
+public class GetParams {
+  public string Get(string inputUrlParams) {
     var paramObject = new {
-      params => params,
+      parameters = inputUrlParams
     };
     string jsonString = JsonSerializer.Serialize(paramObject);
-    return
+    return jsonString;
   }
 }
