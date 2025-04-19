@@ -1,2 +1,12 @@
 obj/
 bin/
+
+### Linux ###
+
+*~
+
+# On Unix, make your own by running these commands from the repo root:
+# ln -s $(pwd)/src/libraries/System.Private.CoreLib/src src/coreclr/System.Private.CoreLib/shared
+# ln -s $(pwd)/src/libraries/Common/src src/coreclr/System.Private.CoreLib/common
+src/coreclr/System.Private.CoreLib/shared
+src/coreclr/System.Private.CoreLib/common
