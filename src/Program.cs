@@ -6,8 +6,8 @@ var app = builder.Build();
 
 var getParams = new GetParams();
 
-app.MapGet("/", (string param) => {
-    getParams.Get(param);
+app.MapGet("/{*urlParam}", (string urlParam = "") => {
+  return getParams.Get(urlParam);
 });
 
 app.Run();
