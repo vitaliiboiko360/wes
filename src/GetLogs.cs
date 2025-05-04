@@ -1,41 +1,41 @@
 using System;
-using System.Text.Json;
 using System.IO;
+using System.Text.Json;
 
 namespace GetLogsFile;
 
 public class GetLogs
 {
-    private string filePath;
-    private bool isRead;
+  private string filePath;
+  private bool isRead;
 
-    public GetLogs()
+  public GetLogs()
+  {
+    filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
+    if (!String.IsNullOrEmpty(filePath))
     {
-        filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
-        if (!String.IsNullOrEmpty(filePath))
-        {
-            filePath = "README.md";
-            isRead = false;
-        }
-        else
-        {
-            isRead = true;
-        }
+      filePath = "README.md";
+      isRead = false;
     }
-
-    public string OnGetLogs(string urlParam)
+    else
     {
-        try
-        {
-            using StreamReader reader = new(filePath);
-            string content = reader.ReadToEnd();
-
-            if (isRead) { }
-            return content;
-        }
-        catch (IOException e)
-        {
-            return e.GetType().Name;
-        }
+      isRead = true;
     }
+  }
+
+  public string OnGetLogs(string urlParam)
+  {
+    try
+    {
+      using StreamReader reader = new(filePath);
+      string content = reader.ReadToEnd();
+
+      if (isRead) { }
+      return content;
+    }
+    catch (IOException e)
+    {
+      return e.GetType().Name;
+    }
+  }
 }
