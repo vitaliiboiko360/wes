@@ -30,8 +30,13 @@ public class GetLogs
       using StreamReader reader = new(filePath);
       string content = reader.ReadToEnd();
 
-      if (isRead) { }
-      return content;
+      if (isRead) {
+
+      }
+
+      string[] linesInFile = content.Split('\n');
+      string jsonString = JsonSerializer.Serialize(linesInFile);
+      return jsonString;
     }
     catch (IOException e)
     {
