@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
 namespace GetLogsFile;
 
+Dictionary<string, string> map = new Dictionary<string, string>();
+
 enum WordPosition
 {
   remote_ip = 0,
+  empty_dash = 1,
   remote_user = 2,
   time_local = 3,
   request = 4,
@@ -45,17 +49,25 @@ public class GetLogs
 
       if (isRead)
       {
+        int lineIndex = 0;
+        map[] lineObjectArray;
         foreach (string line in linesInFile)
         {
           string[] wordsOfLine = line.Split(' ');
           int wordIndex = 0;
+          map.Clear();
           foreach (string word in wordsOfLine)
           {
+            if (wordIndex != WordPosition.empty_dash)
+            {
+              map.Add(WordPosition[wordIndex].ToString(), word);
+            }
             wordIndex++;
           }
+          lineObjectArray.SetValue(map, lineIndex++);
         }
 
-        string jsonString = JsonSerializer.Serialize(linesInFile);
+        string jsonString = JsonSerializer.Serialize(lineObjectArray);
         return jsonString;
       }
 
