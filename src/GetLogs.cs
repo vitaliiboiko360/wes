@@ -37,7 +37,7 @@ public class GetLogs
     }
   }
 
-  public string OnGetLogs(string urlParam)
+  public string OnGetLogs(string urlParam = "")
   {
     try
     {
