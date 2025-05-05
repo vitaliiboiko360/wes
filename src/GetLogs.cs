@@ -4,6 +4,18 @@ using System.Text.Json;
 
 namespace GetLogsFile;
 
+enum WordPosition
+{
+  remote_ip = 0,
+  remote_user = 2,
+  time_local = 3,
+  request = 4,
+  status = 5,
+  body_bytes_sent = 6,
+  http_referer = 7,
+  http_user_agent = 8,
+}
+
 public class GetLogs
 {
   private string filePath;
@@ -29,12 +41,24 @@ public class GetLogs
     {
       using StreamReader reader = new(filePath);
       string content = reader.ReadToEnd();
+      string[] linesInFile = content.Split('\n');
 
-      if (isRead) {
+      if (isRead)
+      {
+        foreach (string line in linesInFile)
+        {
+          string[] wordsOfLine = line.Split(' ');
+          int wordIndex = 0;
+          foreach (string word in wordsOfLine)
+          {
+            wordIndex++;
+          }
+        }
 
+        string jsonString = JsonSerializer.Serialize(linesInFile);
+        return jsonString;
       }
 
-      string[] linesInFile = content.Split('\n');
       string jsonString = JsonSerializer.Serialize(linesInFile);
       return jsonString;
     }
