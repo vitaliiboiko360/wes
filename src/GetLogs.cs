@@ -5,8 +5,6 @@ using System.Text.Json;
 
 namespace GetLogsFile;
 
-Dictionary<string, string> map = new Dictionary<string, string>();
-
 enum WordPosition
 {
   remote_ip = 0,
@@ -22,8 +20,8 @@ enum WordPosition
 
 public class GetLogs
 {
-  private string filePath;
-  private bool isRead;
+  private string filePath = null;
+  private bool isRead = false;
 
   public GetLogs()
   {
@@ -49,26 +47,24 @@ public class GetLogs
 
       if (isRead)
       {
-        int lineIndex = 0;
-        map[] lineObjectArray;
+        List<Dictionary<string, string>> lineObjectArray = new List<Dictionary<string, string>>();
         foreach (string line in linesInFile)
         {
           string[] wordsOfLine = line.Split(' ');
           int wordIndex = 0;
-          map.Clear();
+          Dictionary<string, string> map = new Dictionary<string, string>();
           foreach (string word in wordsOfLine)
           {
-            if (wordIndex != WordPosition.empty_dash)
+            if (wordIndex != (int)WordPosition.empty_dash)
             {
-              map.Add(WordPosition[wordIndex].ToString(), word);
+              map.Add(((WordPosition)wordIndex).ToString(), word);
             }
             wordIndex++;
           }
-          lineObjectArray.SetValue(map, lineIndex++);
+          lineObjectArray.Add(map);
         }
 
-        string jsonString = JsonSerializer.Serialize(lineObjectArray);
-        return jsonString;
+        return JsonSerializer.Serialize(lineObjectArray);
       }
 
       string jsonString = JsonSerializer.Serialize(linesInFile);
