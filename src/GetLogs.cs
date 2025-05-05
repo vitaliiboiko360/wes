@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace GetLogsFile;
 
@@ -20,13 +21,21 @@ enum WordPosition
 
 public class GetLogs
 {
-  private string filePath = null;
+  class LogLines
+  {
+    public const string linesName = "lines";
+    public List<Dictionary<string, string>> lines;
+  }
+
+  private string filePath = "";
   private bool isRead = false;
 
   public GetLogs()
   {
+    using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+    ILogger logger = factory.CreateLogger<Program>();
     filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
-    if (!String.IsNullOrEmpty(filePath))
+    if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOT_NET_DIR")))
     {
       filePath = "README.md";
       isRead = false;
@@ -35,13 +44,15 @@ public class GetLogs
     {
       isRead = true;
     }
+    logger.LogInformation("filePath = {}", filePath);
+    logger.LogInformation("filePathE = {}", Environment.GetEnvironmentVariable("DOT_NET_DIR"));
   }
 
   public string OnGetLogs(string urlParam = "")
   {
     try
     {
-      using StreamReader reader = new(filePath);
+      using StreamReader reader = new(Environment.GetEnvironmentVariable("DOT_NET_DIR"));
       string content = reader.ReadToEnd();
       string[] linesInFile = content.Split('\n');
 
@@ -63,8 +74,8 @@ public class GetLogs
           }
           lineObjectArray.Add(map);
         }
-
-        return JsonSerializer.Serialize(lineObjectArray);
+        var logLines = new LogLines() { lines = lineObjectArray };
+        return JsonSerializer.Serialize(logLines);
       }
 
       string jsonString = JsonSerializer.Serialize(linesInFile);
