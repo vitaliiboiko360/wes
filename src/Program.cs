@@ -13,7 +13,8 @@ app.MapGet("/{*urlParam}", (string urlParam = "") => {
   return getParams.Get(urlParam);
 });
 
-app.MapGet("/logs", () => {
+app.MapGet("/logs", (HttpContext context) => {
+  context.Response.Headers.ContentType = "application/json";
   return getLogs.OnGetLogs();
 });
 
