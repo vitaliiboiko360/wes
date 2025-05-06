@@ -176,13 +176,15 @@ public class GetLogs
 
   private string GetQuotes(string inputStr)
   {
-    string pattern = "\".*\"";
-    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+    string pattern = "\"[^\"]*\"";
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern).Replace("\"","");
   }
 
   private string GetNumber(string inputStr)
   {
     string pattern = "[0-9]+";
-    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+    string retString = MatchPatternOrGetEmptyDefault(inputStr, pattern);
+    SetCursorIndex(GetCursorIndex() + retString.Length - 1);
+    return retString;
   }
 }
