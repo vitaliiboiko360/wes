@@ -27,25 +27,12 @@ public class GetLogs
     public List<Dictionary<string, string>> lines;
   }
 
-  private string filePath = "";
+  private string filePath = "README.md";
   private bool isRead = false;
 
   public GetLogs()
   {
-    using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-    ILogger logger = factory.CreateLogger<Program>();
-    filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
-    if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOT_NET_DIR")))
-    {
-      filePath = "README.md";
-      isRead = false;
-    }
-    else
-    {
-      isRead = true;
-    }
-    logger.LogInformation("filePath = {}", filePath);
-    logger.LogInformation("filePathE = {}", Environment.GetEnvironmentVariable("DOT_NET_DIR"));
+    isRead = ReadLogPathFromEnv();
   }
 
   public string OnGetLogs(string urlParam = "")
@@ -85,5 +72,18 @@ public class GetLogs
     {
       return e.GetType().Name;
     }
+  }
+
+  private bool ReadLogPathFromEnv()
+  {
+    using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+    ILogger logger = factory.CreateLogger<Program>();
+
+    filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
+
+    logger.LogInformation("ReadLogPathFromEnv filePath = {}", filePath);
+    logger.LogInformation("ReadLogPathFromEnv filePathE = {}", Environment.GetEnvironmentVariable("DOT_NET_DIR"));
+
+    return !String.IsNullOrEmpty(filePath);
   }
 }
