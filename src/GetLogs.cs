@@ -39,7 +39,7 @@ public class GetLogs
   {
     try
     {
-      using StreamReader reader = new(Environment.GetEnvironmentVariable("DOT_NET_DIR"));
+      using StreamReader reader = new(filePath);
       string content = reader.ReadToEnd();
       string[] linesInFile = content.Split('\n');
 
