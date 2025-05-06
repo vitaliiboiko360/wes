@@ -128,9 +128,15 @@ public class GetLogs
     return MatchPatternOrGetEmptyDefault(inputStr, pattern);
   }
 
-  private string GetRequest(string inputStr)
+  private string GetQuotes(string inputStr)
   {
     string pattern = "\".*\"";
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+  }
+
+  private string GetNumber(string inputStr)
+  {
+    string pattern = "[0-9]+";
     return MatchPatternOrGetEmptyDefault(inputStr, pattern);
   }
 }
