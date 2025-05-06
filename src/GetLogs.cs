@@ -22,31 +22,25 @@ enum WordPosition
 
 public class GetLogs
 {
-  class LogLines
-  {
-    public const string linesName = "lines";
-    public List<Dictionary<string, string>> lines;
-  }
-
   struct LogLine
   {
     public LogLine(
-      string remote_addr,
-      string time_local,
-      string request,
-      string status,
-      string bytes_sent,
-      string referer,
-      string user_agent
+      string input_remote_addr,
+      string input_time_local,
+      string input_request,
+      string input_status,
+      string input_bytes_sent,
+      string input_referer,
+      string input_user_agent
     )
     {
-      remote_addr = remote_addr;
-      time_local = time_local;
-      request = request;
-      status = status;
-      bytes_sent = bytes_sent;
-      referer = referer;
-      user_agent = user_agent;
+      remote_addr = input_remote_addr;
+      time_local = input_time_local;
+      request = input_request;
+      status = input_status;
+      bytes_sent = input_bytes_sent;
+      referer = input_referer;
+      user_agent = input_user_agent;
     }
 
     public string remote_addr { get; }
@@ -56,6 +50,12 @@ public class GetLogs
     public string bytes_sent { get; }
     public string referer { get; }
     public string user_agent { get; }
+  }
+
+  class LogLines
+  {
+    public const string linesName = "lines";
+    public List<LogLine> lines;
   }
 
   private string filePath = "README.md";
@@ -77,24 +77,40 @@ public class GetLogs
 
       if (isRead)
       {
-        List<Dictionary<string, string>> lineObjectArray = new List<Dictionary<string, string>>();
+        List<LogLine> lineObjectArray = new List<LogLine>();
         foreach (string line in linesInFile)
         {
-          string[] wordsOfLine = line.Split(' ');
-          int wordIndex = 0;
-          Dictionary<string, string> map = new Dictionary<string, string>();
-          foreach (string word in wordsOfLine)
+          try
           {
-            if (wordIndex != (int)WordPosition.empty_dash)
-            {
-              map.Add(((WordPosition)wordIndex).ToString(), word);
-            }
-            wordIndex++;
+            string remote_addr = GetIpAddr(line.Substring(GetCursorIndex()));
+            string time_local = GetTime(line.Substring(GetCursorIndex()));
+            string request = GetQuotes(line.Substring(GetCursorIndex()));
+            string status = GetNumber(line.Substring(GetCursorIndex()));
+            string bytes_sent = GetNumber(line.Substring(GetCursorIndex()));
+            string referer = GetQuotes(line.Substring(GetCursorIndex()));
+            string user_agent = GetQuotes(line.Substring(GetCursorIndex()));
+
+
+          var logLine = new LogLine(
+            remote_addr,
+            time_local,
+            request,
+            status,
+            bytes_sent,
+            referer,
+            user_agent
+          );
+          lineObjectArray.Add(logLine);
+                    }
+          catch (ArgumentOutOfRangeException e)
+          {
+            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger logger = factory.CreateLogger<Program>();
+            logger.LogInformation(e.GetType().Name);
           }
-          lineObjectArray.Add(map);
         }
         var logLines = new LogLines() { lines = lineObjectArray };
-        return JsonSerializer.Serialize(logLines);
+        return JsonSerializer.Serialize(lineObjectArray);
       }
 
       string jsonString = JsonSerializer.Serialize(linesInFile);
@@ -141,7 +157,7 @@ public class GetLogs
       return "-";
     }
 
-    SetCursorIndex(GetCursorIndex() + match.Length);
+    SetCursorIndex(match.Index + 1);
 
     return match.Value;
   }
