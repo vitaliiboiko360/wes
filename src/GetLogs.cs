@@ -28,6 +28,36 @@ public class GetLogs
     public List<Dictionary<string, string>> lines;
   }
 
+  struct LogLine
+  {
+    public LogLine(
+      string remote_addr,
+      string time_local,
+      string request,
+      string status,
+      string bytes_sent,
+      string referer,
+      string user_agent
+    )
+    {
+      remote_addr = remote_addr;
+      time_local = time_local;
+      request = request;
+      status = status;
+      bytes_sent = bytes_sent;
+      referer = referer;
+      user_agent = user_agent;
+    }
+
+    public string remote_addr { get; }
+    public string time_local { get; }
+    public string request { get; }
+    public string status { get; }
+    public string bytes_sent { get; }
+    public string referer { get; }
+    public string user_agent { get; }
+  }
+
   private string filePath = "README.md";
   private bool isRead = false;
   private int cursorIndex = 0;
