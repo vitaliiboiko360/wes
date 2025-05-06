@@ -28,8 +28,8 @@ public class GetLogs
       string input_remote_addr,
       string input_time_local,
       string input_request,
-      string input_status,
-      string input_bytes_sent,
+      int input_status,
+      int input_bytes_sent,
       string input_referer,
       string input_user_agent
     )
@@ -46,8 +46,8 @@ public class GetLogs
     public string remote_addr { get; }
     public string time_local { get; }
     public string request { get; }
-    public string status { get; }
-    public string bytes_sent { get; }
+    public int status { get; }
+    public int bytes_sent { get; }
     public string referer { get; }
     public string user_agent { get; }
   }
@@ -93,8 +93,8 @@ public class GetLogs
               string remote_addr = GetIpAddr(line.Substring(GetCursorIndex()));
               string time_local = GetTime(line.Substring(GetCursorIndex()));
               string request = GetQuotes(line.Substring(GetCursorIndex()));
-              string status = GetNumber(line.Substring(GetCursorIndex()));
-              string bytes_sent = GetNumber(line.Substring(GetCursorIndex()));
+              int status = ParseInt(GetNumber(line.Substring(GetCursorIndex())));
+              int bytes_sent = ParseInt(GetNumber(line.Substring(GetCursorIndex())));
               string referer = GetQuotes(line.Substring(GetCursorIndex()));
               string user_agent = GetQuotes(line.Substring(GetCursorIndex()));
 
@@ -194,5 +194,27 @@ public class GetLogs
   {
     string pattern = "[0-9]+";
     return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+  }
+
+  private int ParseInt(string intpuStr)
+  {
+    try
+    {
+      var result = Convert.ToInt32(intpuStr);
+      return result;
+    }
+    catch (OverflowException)
+    {
+      Console.WriteLine("{0} is outside the range of the Int32 type.", intpuStr);
+    }
+    catch (FormatException)
+    {
+      Console.WriteLine(
+        "The {0} value '{1}' is not in a recognizable format.",
+        intpuStr.GetType().Name,
+        intpuStr
+      );
+    }
+    return -1;
   }
 }
