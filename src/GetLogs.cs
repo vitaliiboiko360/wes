@@ -78,35 +78,45 @@ public class GetLogs
       if (isRead)
       {
         List<LogLine> lineObjectArray = new List<LogLine>();
-        foreach (string line in linesInFile)
+        for (int i = 0; i < 2; i++)
         {
-          try
+          if (i == 1)
           {
-            string remote_addr = GetIpAddr(line.Substring(GetCursorIndex()));
-            string time_local = GetTime(line.Substring(GetCursorIndex()));
-            string request = GetQuotes(line.Substring(GetCursorIndex()));
-            string status = GetNumber(line.Substring(GetCursorIndex()));
-            string bytes_sent = GetNumber(line.Substring(GetCursorIndex()));
-            string referer = GetQuotes(line.Substring(GetCursorIndex()));
-            string user_agent = GetQuotes(line.Substring(GetCursorIndex()));
-
-
-          var logLine = new LogLine(
-            remote_addr,
-            time_local,
-            request,
-            status,
-            bytes_sent,
-            referer,
-            user_agent
-          );
-          lineObjectArray.Add(logLine);
-                    }
-          catch (ArgumentOutOfRangeException e)
+            using StreamReader reader1 = new(filePath + ".1");
+            content = reader1.ReadToEnd();
+            linesInFile = content.Split('\n');
+          }
+          foreach (string line in linesInFile)
           {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger logger = factory.CreateLogger<Program>();
-            logger.LogInformation(e.GetType().Name);
+            try
+            {
+              string remote_addr = GetIpAddr(line.Substring(GetCursorIndex()));
+              string time_local = GetTime(line.Substring(GetCursorIndex()));
+              string request = GetQuotes(line.Substring(GetCursorIndex()));
+              string status = GetNumber(line.Substring(GetCursorIndex()));
+              string bytes_sent = GetNumber(line.Substring(GetCursorIndex()));
+              string referer = GetQuotes(line.Substring(GetCursorIndex()));
+              string user_agent = GetQuotes(line.Substring(GetCursorIndex()));
+
+              var logLine = new LogLine(
+                remote_addr,
+                time_local,
+                request,
+                status,
+                bytes_sent,
+                referer,
+                user_agent
+              );
+              lineObjectArray.Add(logLine);
+              SetCursorIndex(0);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+              using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+              ILogger logger = factory.CreateLogger<Program>();
+              logger.LogInformation(e.GetType().Name);
+              SetCursorIndex(0);
+            }
           }
         }
         var logLines = new LogLines() { lines = lineObjectArray };
@@ -157,7 +167,7 @@ public class GetLogs
       return "-";
     }
 
-    SetCursorIndex(match.Index + 1);
+    SetCursorIndex(GetCursorIndex() + match.Index + match.Length);
 
     return match.Value;
   }
@@ -170,21 +180,19 @@ public class GetLogs
 
   private string GetTime(string inputStr)
   {
-    string pattern = "\\[.*\\]";
+    string pattern = "\\[[^\\]]*\\]";
     return MatchPatternOrGetEmptyDefault(inputStr, pattern);
   }
 
   private string GetQuotes(string inputStr)
   {
     string pattern = "\"[^\"]*\"";
-    return MatchPatternOrGetEmptyDefault(inputStr, pattern).Replace("\"","");
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern).Replace("\"", "");
   }
 
   private string GetNumber(string inputStr)
   {
     string pattern = "[0-9]+";
-    string retString = MatchPatternOrGetEmptyDefault(inputStr, pattern);
-    SetCursorIndex(GetCursorIndex() + retString.Length - 1);
-    return retString;
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
   }
 }
