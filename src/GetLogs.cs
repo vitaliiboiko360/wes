@@ -82,7 +82,10 @@ public class GetLogs
     filePath = Environment.GetEnvironmentVariable("DOT_NET_DIR");
 
     logger.LogInformation("ReadLogPathFromEnv filePath = {}", filePath);
-    logger.LogInformation("ReadLogPathFromEnv filePathE = {}", Environment.GetEnvironmentVariable("DOT_NET_DIR"));
+    logger.LogInformation(
+      "ReadLogPathFromEnv filePathE = {}",
+      Environment.GetEnvironmentVariable("DOT_NET_DIR")
+    );
 
     return !String.IsNullOrEmpty(filePath);
   }
