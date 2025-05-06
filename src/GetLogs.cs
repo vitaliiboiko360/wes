@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace GetLogsFile;
@@ -29,6 +30,7 @@ public class GetLogs
 
   private string filePath = "README.md";
   private bool isRead = false;
+  private int cursorIndex = 0;
 
   public GetLogs()
   {
@@ -74,6 +76,16 @@ public class GetLogs
     }
   }
 
+  private int GetCursorIndex()
+  {
+    return cursorIndex;
+  }
+
+  private void SetCursorIndex(int newIndex)
+  {
+    cursorIndex = newIndex;
+  }
+
   private bool ReadLogPathFromEnv()
   {
     using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -88,5 +100,37 @@ public class GetLogs
     );
 
     return !String.IsNullOrEmpty(filePath);
+  }
+
+  private string MatchPatternOrGetEmptyDefault(string inputStr, string pattern)
+  {
+    var match = Regex.Match(inputStr, pattern);
+
+    if (!match.Success)
+    {
+      return "-";
+    }
+
+    SetCursorIndex(GetCursorIndex() + match.Length);
+
+    return match.Value;
+  }
+
+  private string GetIpAddr(string inputStr)
+  {
+    string pattern = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+  }
+
+  private string GetTime(string inputStr)
+  {
+    string pattern = "\\[.*\\]";
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
+  }
+
+  private string GetRequest(string inputStr)
+  {
+    string pattern = "\".*\"";
+    return MatchPatternOrGetEmptyDefault(inputStr, pattern);
   }
 }
